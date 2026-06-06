@@ -1,0 +1,17 @@
+{
+  "name": "hyperframes-2-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent-ready HyperFrames workspace for deterministic 9:16 video compositions.",
+  "scripts": {
+    "lint": "npx hyperframes lint",
+    "validate": "npx hyperframes validate",
+    "inspect": "npx hyperframes inspect",
+    "preview": "npx hyperframes preview",
+    "render": "npx hyperframes render",
+    "check": "npx hyperframes lint && npx hyperframes validate"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

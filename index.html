@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EPOCH</title>
+    <style>
+      :root {
+        --void: #000508;
+        --cyan: #00d4ff;
+        --cyan-soft: #66eeff;
+        --amber: #e5b05c;
+        --red: #ff4422;
+        --white: #f6fbff;
+        --steel: #14202d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: var(--void);
+        color: var(--white);
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--void);
+        font-family: Inter, Arial, sans-serif;
+      }
+
+      #three-scene,
+      #grain-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      #three-scene {
+        z-index: 0;
+      }
+
+      .depth-stage {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        perspective: 1400px;
+        transform-style: preserve-3d;
+        opacity: 1;
+      }
+
+      .z-layer {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        pointer-events: none;
+      }
+
+      .z-bg {
+        translate: 0 0 -400px;
+        scale: 1.8;
+        background:
+          radial-gradient(ellipse 65% 50% at 40% 35%, rgba(0, 40, 80, 0.18), transparent 60%),
+          radial-gradient(ellipse 120% 80% at 80% 80%, rgba(20, 5, 40, 0.3), transparent 70%),
+          #000508;
+      }
+
+      .z-mg-back {
+        translate: 0 0 -120px;
+        scale: 1.12;
+      }
+
+      .z-mg {
+        translate: 0 0 0;
+      }
+
+      .z-fg-1 {
+        translate: 0 0 160px;
+        scale: 0.86;
+      }
+
+      .z-fg-2 {
+        translate: 0 0 280px;
+        scale: 0.76;
+      }
+
+      .bg-inner,
+      .fg-inner {
+        position: absolute;
+        inset: 0;
+      }
+
+      .micro-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.03;
+        background:
+          repeating-linear-gradient(0deg, transparent 0 47px, rgba(255, 255, 255, 0.35) 48px),
+          repeating-linear-gradient(90deg, transparent 0 47px, rgba(255, 255, 255, 0.35) 48px);
+      }
+
+      .nebula {
+        position: absolute;
+        width: 400px;
+        height: 600px;
+        left: 60%;
+        top: 20%;
+        margin-left: -200px;
+        margin-top: -300px;
+        background: radial-gradient(ellipse, rgba(30, 10, 60, 0.4), transparent 70%);
+      }
+
+      .watermark {
+        position: absolute;
+        inset: -180px;
+        opacity: 0.025;
+        color: #ffffff;
+        font-family: monospace;
+        font-size: 11px;
+        line-height: 64px;
+        letter-spacing: 4px;
+        transform: rotate(-8deg);
+        white-space: pre-wrap;
+      }
+
+      .hull-panel {
+        position: absolute;
+        border-radius: 3px;
+        background: rgba(20, 32, 45, 0.7);
+        border: 1px solid rgba(100, 150, 200, 0.12);
+        box-shadow: inset 0 0 30px rgba(0, 50, 100, 0.15);
+        opacity: 0.86;
+      }
+
+      .hull-panel::before,
+      .hull-panel::after {
+        content: "";
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .hull-panel::before {
+        top: 35%;
+      }
+
+      .hull-panel::after {
+        top: 65%;
+      }
+
+      .panel-a {
+        width: 280px;
+        height: 180px;
+        left: 76px;
+        top: 420px;
+      }
+
+      .panel-b {
+        width: 160px;
+        height: 240px;
+        right: 95px;
+        top: 520px;
+      }
+
+      .panel-c {
+        width: 320px;
+        height: 90px;
+        left: 120px;
+        bottom: 430px;
+      }
+
+      .panel-d {
+        width: 200px;
+        height: 200px;
+        right: 130px;
+        bottom: 365px;
+      }
+
+      .terminal-wrap {
+        position: absolute;
+        left: 50%;
+        top: 55%;
+        width: 420px;
+        height: 320px;
+        margin-left: -210px;
+        margin-top: -160px;
+        transform-style: preserve-3d;
+      }
+
+      #terminal-panel {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        background: rgba(0, 12, 24, 0.92);
+        border: 1.5px solid rgba(0, 200, 255, 0.35);
+        box-shadow:
+          0 0 40px rgba(0, 180, 255, 0.12),
+          0 0 120px rgba(0, 100, 255, 0.06),
+          inset 0 0 20px rgba(0, 150, 255, 0.04);
+      }
+
+      .terminal-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 36px;
+        padding: 0 16px;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.18);
+      }
+
+      .status-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--cyan);
+      }
+
+      .dot-amber {
+        background: var(--amber);
+      }
+
+      .dot-red {
+        background: var(--red);
+      }
+
+      .data-stream {
+        position: absolute;
+        left: 18px;
+        top: 48px;
+        width: 235px;
+        height: 248px;
+        margin: 0;
+        color: rgba(205, 255, 235, 0.82);
+        font-family: monospace;
+        font-size: 10px;
+        line-height: 16px;
+        white-space: pre;
+      }
+
+      .radar {
+        position: absolute;
+        right: 28px;
+        bottom: 36px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 212, 255, 0.35);
+        background:
+          radial-gradient(circle, rgba(0, 212, 255, 0.08) 0 12%, transparent 13% 100%),
+          conic-gradient(from 0deg, rgba(0, 212, 255, 0.8), rgba(0, 212, 255, 0.08), transparent 45%);
+      }
+
+      .hud {
+        position: absolute;
+        left: 50%;
+        top: 54%;
+        width: 560px;
+        height: 560px;
+        margin-left: -280px;
+        margin-top: -360px;
+        transform: translateZ(80px);
+      }
+
+      .hud-ring {
+        position: absolute;
+        inset: 0;
+        overflow: visible;
+      }
+
+      .type-stack {
+        position: absolute;
+        left: 70px;
+        top: 655px;
+        width: 940px;
+        height: 460px;
+        perspective: 600px;
+        transform-style: preserve-3d;
+      }
+
+      .kinetic {
+        position: absolute;
+        left: 0;
+        margin: 0;
+        transform: translateZ(80px);
+        text-shadow:
+          0 4px 20px rgba(0, 0, 0, 0.8),
+          0 0 40px rgba(0, 200, 255, 0.2);
+      }
+
+      #word-signal {
+        top: 0;
+        font-family: Inter, Arial, sans-serif;
+        font-size: 148px;
+        line-height: 0.88;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 16px;
+      }
+
+      #word-intercepted {
+        top: 158px;
+        color: var(--cyan);
+        font-family: monospace;
+        font-size: 38px;
+        line-height: 1;
+        letter-spacing: 8px;
+      }
+
+      #word-node {
+        top: 222px;
+        color: rgba(200, 230, 255, 0.7);
+        font-family: monospace;
+        font-size: 22px;
+        line-height: 1;
+        letter-spacing: 3px;
+      }
+
+      #counter {
+        top: 272px;
+        color: var(--amber);
+        font-family: Inter, Arial, sans-serif;
+        font-size: 62px;
+        line-height: 1;
+        letter-spacing: 3px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .glass-title {
+        position: absolute;
+        left: 50%;
+        top: 120px;
+        width: 640px;
+        height: 180px;
+        margin-left: -320px;
+        display: grid;
+        place-items: center;
+        background: rgba(5, 15, 30, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transform-style: preserve-3d;
+      }
+
+      .glass-title span {
+        transform: translateZ(40px);
+        color: rgba(255, 255, 255, 0.85);
+        font-family: Inter, Arial, sans-serif;
+        font-size: 72px;
+        font-weight: 700;
+        letter-spacing: 24px;
+        text-shadow:
+          0 0 20px rgba(0, 212, 255, 0.45),
+          0 0 60px rgba(0, 212, 255, 0.2);
+      }
+
+      .frame-bracket {
+        position: absolute;
+        width: 118px;
+        height: 118px;
+        border-color: var(--cyan);
+        opacity: 0.82;
+        filter: drop-shadow(0 0 10px rgba(102, 238, 255, 0.65));
+      }
+
+      .br-tl {
+        left: 58px;
+        top: 58px;
+        border-left: 3px solid;
+        border-top: 3px solid;
+      }
+
+      .br-tr {
+        right: 58px;
+        top: 58px;
+        border-right: 3px solid;
+        border-top: 3px solid;
+      }
+
+      .br-bl {
+        left: 58px;
+        bottom: 58px;
+        border-left: 3px solid;
+        border-bottom: 3px solid;
+      }
+
+      .br-br {
+        right: 58px;
+        bottom: 58px;
+        border-right: 3px solid;
+        border-bottom: 3px solid;
+      }
+
+      .scan-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -12px;
+        height: 2px;
+        background: var(--cyan);
+        box-shadow: 0 0 18px rgba(0, 212, 255, 0.8);
+        opacity: 0.56;
+      }
+
+      .scan-amber {
+        height: 1px;
+        background: var(--amber);
+        box-shadow: 0 0 12px rgba(229, 176, 92, 0.6);
+        opacity: 0.35;
+      }
+
+      .light-ray {
+        position: absolute;
+        width: 280px;
+        height: 2200px;
+        right: -150px;
+        top: -240px;
+        background: linear-gradient(90deg, transparent, rgba(120, 220, 255, 0.035), transparent);
+        transform: rotate(24deg);
+      }
+
+      .fg-particle,
+      .burst-particle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--cyan);
+        box-shadow: 0 0 14px rgba(0, 212, 255, 0.8);
+      }
+
+      .chrom {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+        pointer-events: none;
+        mix-blend-mode: screen;
+        opacity: 0;
+      }
+
+      .chrom::before,
+      .chrom::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 2px solid transparent;
+      }
+
+      .chrom::before {
+        border-color: rgba(255, 50, 80, 0.45);
+        transform: translateX(-5px);
+      }
+
+      .chrom::after {
+        border-color: rgba(0, 212, 255, 0.45);
+        transform: translateX(5px);
+      }
+
+      .flash-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        background: #ffffff;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #grain-canvas {
+        z-index: 6;
+        opacity: 0.18;
+        mix-blend-mode: overlay;
+        pointer-events: none;
+      }
+
+      .vignette {
+        position: absolute;
+        inset: 0;
+        z-index: 7;
+        pointer-events: none;
+        background: radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(0, 0, 0, 0.72) 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="epoch"
+      data-start="0"
+      data-duration="15"
+      data-width="1080"
+      data-height="1920"
+      data-fps="30"
+      data-layout-allow-overflow
+    >
+      <canvas id="three-scene" class="clip" data-start="0" data-duration="15" data-track-index="0"></canvas>
+
+      <div id="depth-stage" class="depth-stage clip" data-start="0" data-duration="15" data-track-index="1">
+        <div class="z-layer z-bg">
+          <div class="bg-inner" data-layout-allow-overflow>
+            <div class="micro-grid"></div>
+            <div class="nebula"></div>
+            <div class="watermark" id="watermark"></div>
+          </div>
+        </div>
+
+        <div class="z-layer z-mg-back">
+          <div class="hull-panel panel-a"></div>
+          <div class="hull-panel panel-b"></div>
+          <div class="hull-panel panel-c"></div>
+          <div class="hull-panel panel-d"></div>
+        </div>
+
+        <div class="z-layer z-mg">
+          <div class="hud">
+            <svg class="hud-ring hud-ring-a" viewBox="0 0 560 560" aria-hidden="true">
+              <circle
+                cx="280"
+                cy="280"
+                r="180"
+                fill="none"
+                stroke="rgba(0,200,255,0.25)"
+                stroke-width="2"
+                stroke-dasharray="120 30 60 30 200 30"
+              />
+            </svg>
+            <svg class="hud-ring hud-ring-b" viewBox="0 0 560 560" aria-hidden="true">
+              <circle
+                cx="280"
+                cy="280"
+                r="220"
+                fill="none"
+                stroke="rgba(229,176,92,0.18)"
+                stroke-width="1"
+                stroke-dasharray="70 20 140 40"
+              />
+            </svg>
+          </div>
+
+          <div class="terminal-wrap">
+            <div id="terminal-panel">
+              <div class="terminal-header">
+                <span class="status-dot dot-cyan"></span>
+                <span class="status-dot dot-amber"></span>
+                <span class="status-dot dot-red"></span>
+              </div>
+              <pre class="data-stream" id="data-stream" data-layout-allow-overflow></pre>
+              <div class="radar"></div>
+            </div>
+          </div>
+
+          <div class="type-stack" data-layout-allow-overflow>
+            <h1 id="word-signal" class="kinetic">SIGNAL</h1>
+            <div id="word-intercepted" class="kinetic"></div>
+            <div id="word-node" class="kinetic">RELAY NODE 004</div>
+            <div id="counter" class="kinetic">Ω 000,000</div>
+          </div>
+        </div>
+
+        <div class="z-layer z-fg-1">
+          <div class="fg-inner">
+            <div class="glass-title"><span>EPOCH</span></div>
+            <div class="frame-bracket br-tl"></div>
+            <div class="frame-bracket br-tr"></div>
+            <div class="frame-bracket br-bl"></div>
+            <div class="frame-bracket br-br"></div>
+            <div class="scan-line scan-cyan"></div>
+            <div class="scan-line scan-amber"></div>
+            <div class="light-ray"></div>
+          </div>
+        </div>
+
+        <div class="z-layer z-fg-2" id="particle-layer">
+          <div class="chrom"></div>
+        </div>
+      </div>
+
+      <div class="flash-overlay"></div>
+      <canvas id="grain-canvas" width="540" height="960" data-layout-ignore></canvas>
+      <div class="vignette"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/CustomEase.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      const D = 15;
+      const root = document.getElementById("root");
+      const particleLayer = document.getElementById("particle-layer");
+      const dataStream = document.getElementById("data-stream");
+      const watermark = document.getElementById("watermark");
+
+      function makePrng(seedValue) {
+        let seed = seedValue;
+        return function prng() {
+          let t = (seed += 0x6d2b79f5);
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function finiteRepeat(cycleDuration) {
+        return Math.ceil(D / cycleDuration) - 1;
+      }
+
+      function buildWatermark() {
+        const line = "EPOCH-7 // CLASSIFIED // RELAY NODE 004     ";
+        let text = "";
+        for (let i = 0; i < 220; i += 1) text += line;
+        watermark.textContent = text;
+      }
+
+      function buildDataStream() {
+        const prng = makePrng(22222);
+        const rows = [];
+        for (let i = 0; i < 92; i += 1) {
+          const a = Math.floor(prng() * 0xfffff)
+            .toString(16)
+            .toUpperCase()
+            .padStart(5, "0");
+          const b = Math.floor(prng() * 0xffffff)
+            .toString(16)
+            .toUpperCase()
+            .padStart(6, "0");
+          rows.push(`0x${a}  NODE:${String(i).padStart(3, "0")}  ${b}  LOCK`);
+        }
+        dataStream.textContent = rows.join("\n");
+      }
+
+      function buildParticles() {
+        const prng = makePrng(44444);
+        for (let i = 0; i < 20; i += 1) {
+          const p = document.createElement("div");
+          p.className = "fg-particle";
+          const size = 2 + prng() * 6;
+          p.style.width = `${size}px`;
+          p.style.height = `${size}px`;
+          p.style.left = `${prng() * 1080}px`;
+          p.style.top = `${prng() * 1920}px`;
+          p.style.opacity = String(0.1 + prng() * 0.5);
+          p.style.transform = `translateZ(${Math.round(80 + prng() * 320)}px)`;
+          particleLayer.appendChild(p);
+        }
+      }
+
+      function buildBurst(seedValue, prefix, cx, cy) {
+        const prng = makePrng(seedValue);
+        const nodes = [];
+        for (let i = 0; i < 18; i += 1) {
+          const p = document.createElement("div");
+          p.className = `burst-particle ${prefix}`;
+          p.style.left = `${cx}px`;
+          p.style.top = `${cy}px`;
+          p.style.opacity = "0";
+          particleLayer.appendChild(p);
+          const angle = prng() * Math.PI * 2;
+          const dist = 80 + prng() * 160;
+          nodes.push({ el: p, x: Math.cos(angle) * dist, y: Math.sin(angle) * dist });
+        }
+        return nodes;
+      }
+
+      function drawGrain() {
+        const canvas = document.getElementById("grain-canvas");
+        const ctx = canvas.getContext("2d");
+        const image = ctx.createImageData(540, 960);
+        const prng = makePrng(10101);
+        for (let i = 0; i < image.data.length; i += 4) {
+          const v = Math.floor(prng() * 255);
+          image.data[i] = v;
+          image.data[i + 1] = v;
+          image.data[i + 2] = v;
+          image.data[i + 3] = 34;
+        }
+        ctx.putImageData(image, 0, 0);
+      }
+
+      buildWatermark();
+      buildDataStream();
+      buildParticles();
+      drawGrain();
+
+      const intercepted = "INTERCEPTED";
+      document.getElementById("word-intercepted").innerHTML = intercepted
+        .split("")
+        .map((ch) => `<span class="intercept-char">${ch}</span>`)
+        .join("");
+
+      const three = (function initThree() {
+        const canvas = document.getElementById("three-scene");
+        const probe = document.createElement("canvas");
+        const hasWebGL = Boolean(probe.getContext("webgl") || probe.getContext("experimental-webgl"));
+
+        if (!hasWebGL) {
+          const ctx = canvas.getContext("2d");
+          canvas.width = 1080;
+          canvas.height = 1920;
+          const prng = makePrng(77777);
+          const stars = [];
+          for (let i = 0; i < 1500; i += 1) {
+            stars.push({
+              x: prng() * 1080,
+              y: prng() * 1920,
+              r: 0.5 + prng() * 1.4,
+              a: 0.35 + prng() * 0.65,
+            });
+          }
+          const fallback = {
+            camera: { position: { x: -120, y: 85, z: 620 } },
+            cameraOrbit: { theta: 0 },
+            engineGlow: { intensity: 8 },
+            terminalLight: { intensity: 0 },
+            bloomPass: { strength: 1.4 },
+            starMat: { opacity: 0.9 },
+            renderAt(time) {
+              ctx.clearRect(0, 0, 1080, 1920);
+              ctx.fillStyle = "#000508";
+              ctx.fillRect(0, 0, 1080, 1920);
+              ctx.save();
+              ctx.translate(-300 + Math.sin(time * 0.06) * 18, 1580);
+              ctx.fillStyle = "#1a3050";
+              ctx.beginPath();
+              ctx.arc(0, 0, 820, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.restore();
+              stars.forEach((star) => {
+                ctx.globalAlpha = star.a;
+                ctx.fillStyle = "#f6fbff";
+                ctx.fillRect(star.x, star.y, star.r, star.r);
+              });
+              ctx.globalAlpha = 1;
+              const zoom = Math.max(0.45, 620 / Math.max(160, fallback.camera.position.z));
+              ctx.save();
+              ctx.translate(540 + fallback.camera.position.x * 0.7, 820 + fallback.camera.position.y * 0.35);
+              ctx.scale(zoom, zoom);
+              ctx.rotate(Math.sin(time * 0.15) * 0.08);
+              ctx.fillStyle = "#2a3540";
+              ctx.strokeStyle = "#6aa5c8";
+              ctx.lineWidth = 2;
+              ctx.fillRect(-42, -72, 84, 144);
+              ctx.strokeRect(-42, -72, 84, 144);
+              ctx.fillRect(-278, -10, 220, 20);
+              ctx.fillRect(58, -10, 220, 20);
+              ctx.fillRect(-14, -134, 28, 80);
+              ctx.fillStyle = `rgba(255,68,34,${Math.min(0.7, fallback.engineGlow.intensity / 14)})`;
+              ctx.beginPath();
+              ctx.arc(0, 80, 34, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.fillStyle = `rgba(0,212,255,${Math.min(0.8, fallback.terminalLight.intensity / 15)})`;
+              ctx.fillRect(-58, -38, 116, 76);
+              ctx.restore();
+            },
+          };
+          window.addEventListener("hf-seek", (event) => fallback.renderAt(event.detail.time));
+          fallback.renderAt(window.__hfThreeTime || 0);
+          return fallback;
+        }
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000508, 0.0008);
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setSize(1080, 1920, false);
+        renderer.setPixelRatio(1);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        const camera = new THREE.PerspectiveCamera(55, 1080 / 1920, 0.1, 5000);
+        camera.position.set(-120, 85, 620);
+        camera.lookAt(0, 0, 0);
+
+        const group = new THREE.Group();
+        const stationMat = new THREE.MeshStandardMaterial({
+          color: 0x2a3540,
+          metalness: 0.88,
+          roughness: 0.22,
+          envMapIntensity: 1.4,
+          emissive: 0x0a1520,
+          emissiveIntensity: 0.3,
+        });
+
+        const hub = new THREE.Mesh(new THREE.CylinderGeometry(40, 50, 120, 16), stationMat);
+        hub.rotation.x = Math.PI / 2;
+        group.add(hub);
+
+        const leftWing = new THREE.Mesh(new THREE.BoxGeometry(220, 4, 18), stationMat);
+        leftWing.position.set(-160, 0, 0);
+        group.add(leftWing);
+
+        const rightWing = new THREE.Mesh(new THREE.BoxGeometry(220, 4, 18), stationMat);
+        rightWing.position.set(160, 0, 0);
+        group.add(rightWing);
+
+        const port = new THREE.Mesh(new THREE.CylinderGeometry(12, 16, 40, 12), stationMat);
+        port.position.set(0, 0, 80);
+        port.rotation.x = Math.PI / 2;
+        group.add(port);
+
+        const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 80, 6), stationMat);
+        antenna.position.set(0, 100, 0);
+        group.add(antenna);
+
+        group.scale.setScalar(1.15);
+        scene.add(group);
+
+        const planet = new THREE.Mesh(
+          new THREE.SphereGeometry(800, 64, 64),
+          new THREE.MeshStandardMaterial({
+            color: 0x1a3050,
+            metalness: 0,
+            roughness: 0.9,
+            emissive: 0x0a1828,
+            emissiveIntensity: 0.4,
+          }),
+        );
+        planet.position.set(-300, -1200, -1800);
+        scene.add(planet);
+
+        const prng = makePrng(77777);
+        const starGeo = new THREE.BufferGeometry();
+        const positions = new Float32Array(15000 * 3);
+        const starColors = new Float32Array(15000 * 3);
+        for (let i = 0; i < 15000; i += 1) {
+          const r = 800 + prng() * 3200;
+          const theta = prng() * Math.PI * 2;
+          const phi = Math.acos(2 * prng() - 1);
+          positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+          positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+          positions[i * 3 + 2] = r * Math.cos(phi);
+          const tint = prng();
+          starColors[i * 3] = tint > 0.85 ? 0.6 : 1;
+          starColors[i * 3 + 1] = tint > 0.85 ? 0.7 : tint > 0.7 ? 0.9 : 1;
+          starColors[i * 3 + 2] = tint > 0.85 ? 1 : tint > 0.7 ? 0.6 : 1;
+        }
+        starGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        starGeo.setAttribute("color", new THREE.BufferAttribute(starColors, 3));
+        const starMat = new THREE.PointsMaterial({
+          size: 1.8,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.9,
+        });
+        const stars = new THREE.Points(starGeo, starMat);
+        scene.add(stars);
+
+        const debrisMesh = new THREE.InstancedMesh(
+          new THREE.IcosahedronGeometry(1, 0),
+          new THREE.MeshStandardMaterial({ color: 0x3a3a3a, metalness: 0.3, roughness: 0.9 }),
+          80,
+        );
+        const dummy = new THREE.Object3D();
+        for (let i = 0; i < 80; i += 1) {
+          dummy.position.set((prng() - 0.5) * 600, (prng() - 0.5) * 400, (prng() - 0.5) * 500);
+          dummy.rotation.set(prng() * Math.PI * 2, prng() * Math.PI * 2, prng() * Math.PI * 2);
+          dummy.scale.setScalar(0.3 + prng() * 4);
+          dummy.updateMatrix();
+          debrisMesh.setMatrixAt(i, dummy.matrix);
+        }
+        scene.add(debrisMesh);
+
+        scene.add(new THREE.AmbientLight(0x0a0e14, 0.4));
+        const sun = new THREE.DirectionalLight(0xfff5e0, 3.2);
+        sun.position.set(-200, 300, 100);
+        sun.castShadow = true;
+        scene.add(sun);
+
+        const engineGlow = new THREE.PointLight(0xff4422, 8, 180);
+        engineGlow.position.set(0, -30, -80);
+        scene.add(engineGlow);
+
+        const rimLight = new THREE.PointLight(0x2255ff, 2.5, 400);
+        rimLight.position.set(300, -100, -200);
+        scene.add(rimLight);
+
+        const terminalLight = new THREE.PointLight(0x00d4ff, 0, 120);
+        terminalLight.position.set(0, 0, 100);
+        scene.add(terminalLight);
+
+        const composer = new THREE.EffectComposer(renderer);
+        composer.addPass(new THREE.RenderPass(scene, camera));
+        const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(1080, 1920), 1.4, 0.6, 0.55);
+        composer.addPass(bloomPass);
+
+        const cameraOrbit = { theta: 0 };
+
+        function renderAt(time) {
+          debrisMesh.rotation.y = time * 0.018;
+          planet.rotation.y = time * 0.009;
+          group.rotation.y = time * 0.06;
+          stars.rotation.y = time * 0.002;
+          camera.lookAt(0, 0, 0);
+          composer.render();
+        }
+
+        window.addEventListener("hf-seek", (event) => renderAt(event.detail.time));
+        renderAt(window.__hfThreeTime || 0);
+
+        return { camera, cameraOrbit, engineGlow, terminalLight, bloomPass, starMat, renderAt };
+      })();
+
+      gsap.registerPlugin(CustomEase);
+      CustomEase.create(
+        "springHeavy",
+        "M0,0 C0.1,0 0.12,1.2 0.22,1.2 0.32,1.2 0.36,0.96 0.44,0.96 0.52,0.96 0.55,1.03 0.62,1.03 0.7,1.03 0.76,1 1,1",
+      );
+      CustomEase.create(
+        "springSnappy",
+        "M0,0 C0.04,0 0.06,1.35 0.14,1.35 0.22,1.35 0.26,0.92 0.32,0.92 0.38,0.92 0.4,1.02 0.44,1.02 0.5,1.02 0.55,1 1,1",
+      );
+      CustomEase.create(
+        "springLight",
+        "M0,0 C0.06,0 0.08,1.28 0.18,1.28 0.28,1.28 0.33,0.94 0.4,0.94 0.47,0.94 0.5,1.04 0.56,1.04 0.63,1.04 0.68,1 1,1",
+      );
+
+      const tl = gsap.timeline({ paused: true });
+
+      const bgState = { cx: 40, cy: 35, size: 65, opacity: 0.18 };
+      function updateBG() {
+        document.querySelector(".z-bg").style.background = `
+          radial-gradient(ellipse ${bgState.size}% 50% at ${bgState.cx}% ${bgState.cy}%, rgba(0,40,80,${bgState.opacity}), transparent 60%),
+          radial-gradient(ellipse 120% 80% at 80% 80%, rgba(20,5,40,0.3), transparent 70%),
+          #000508
+        `;
+      }
+
+      const counterState = { value: 0 };
+      function updateCounter() {
+        document.getElementById("counter").textContent =
+          "Ω " + Math.round(counterState.value).toLocaleString("en-US");
+      }
+
+      const burstA = buildBurst(33333, "burst-a", 540, 1040);
+      const burstB = buildBurst(88888, "burst-b", 540, 820);
+
+      function chromFlash(time, intensity) {
+        tl.to(".chrom", { opacity: intensity, duration: 0.04, ease: "none", overwrite: "auto" }, time);
+        tl.to(".chrom", { opacity: 0, duration: 0.2, ease: "power2.out", overwrite: "auto" }, time + 0.04);
+      }
+
+      function burst(nodes, time) {
+        nodes.forEach((node) => {
+          tl.fromTo(
+            node.el,
+            { x: 0, y: 0, scale: 0.5, opacity: 1 },
+            { x: node.x, y: node.y, scale: 0, opacity: 0, duration: 0.72, ease: "power3.out", overwrite: "auto" },
+            time,
+          );
+        });
+      }
+
+      function lifePulse(target, opts, at) {
+        tl.to(
+          target,
+          {
+            scale: `+=${opts.scaleAmp || 0}`,
+            y: opts.yAmp || 0,
+            rotation: opts.rotAmp || 0,
+            duration: opts.scalePeriod || 3,
+            repeat: finiteRepeat(opts.scalePeriod || 3),
+            yoyo: true,
+            ease: "sine.inOut",
+          },
+          at,
+        );
+      }
+
+      function impactResponse(time) {
+        tl.to(".frame-bracket, .fg-particle", { scale: 0.9, duration: 0.08, ease: "power2.in", overwrite: "auto" }, time);
+        tl.to(".frame-bracket, .fg-particle", { scale: 1, duration: 0.36, ease: "springLight", overwrite: "auto" }, time + 0.08);
+        tl.to(".z-fg-1, .z-fg-2", { scale: 0.94, duration: 0.08, ease: "power2.in", overwrite: "auto" }, time);
+        tl.to(".z-fg-1, .z-fg-2", { scale: 1, duration: 0.46, ease: "springLight", overwrite: "auto" }, time + 0.08);
+      }
+
+      tl.fromTo(
+        ".depth-stage",
+        { rotateY: -18, rotateX: 7, opacity: 0, scale: 0.9 },
+        { rotateY: 0, rotateX: 0, opacity: 1, scale: 1, duration: 1.8, ease: "power3.out" },
+        0,
+      );
+      tl.to(three.camera.position, { x: 0, y: 60, z: 420, duration: 1.8, ease: "power2.out" }, 0);
+      chromFlash(0, 0.6);
+
+      tl.fromTo(".z-bg", { rotateY: -2.5, rotateX: 1.2 }, { rotateY: 3, rotateX: -0.8, duration: 15, ease: "sine.inOut" }, 0);
+      tl.fromTo(".z-mg-back", { rotateY: 1.5, rotateX: -0.6 }, { rotateY: -2, rotateX: 0.5, duration: 11, ease: "sine.inOut" }, 0);
+      tl.fromTo(".z-mg", { rotateY: 1.2, rotateX: -0.4 }, { rotateY: -1.8, rotateX: 0.6, duration: 8, ease: "sine.inOut" }, 0);
+      tl.fromTo(".z-fg-1", { rotateY: -3, rotateX: 1.8 }, { rotateY: 4.5, rotateX: -2.2, duration: 6, ease: "sine.inOut" }, 0);
+      tl.fromTo(".z-fg-2", { rotateY: 3.5, rotateX: -2 }, { rotateY: -4, rotateX: 2.8, duration: 4.5, ease: "sine.inOut" }, 0);
+      tl.to(bgState, { cx: 55, cy: 45, size: 82, opacity: 0.26, duration: 15, ease: "sine.inOut", onUpdate: updateBG }, 0);
+
+      tl.from(".frame-bracket", { scale: 0.5, opacity: 0, duration: 0.55, stagger: 0.06, ease: "back.out(2)" }, 0.1);
+      tl.from(".glass-title", { y: -48, opacity: 0, duration: 0.7, ease: "expo.out" }, 0.45);
+      tl.from(".hull-panel", { y: 36, opacity: 0, scale: 0.92, duration: 0.55, stagger: 0.09, ease: "springLight" }, 1.5);
+
+      tl.to(".depth-stage", { perspective: 600, duration: 1.2, ease: "power3.out" }, 2.0);
+      tl.to(three.camera.position, { z: 180, duration: 1.2, ease: "power3.out" }, 2.0);
+      tl.to(".z-fg-1, .z-fg-2", { scale: 1.08, duration: 1.2, ease: "power3.out" }, 2.0);
+      tl.to(".z-bg", { scale: 2.1, duration: 1.2, ease: "power3.out" }, 2.0);
+
+      tl.to(
+        three.cameraOrbit,
+        {
+          theta: Math.PI * 0.5,
+          duration: 2.5,
+          ease: "sine.inOut",
+          onUpdate: () => {
+            three.camera.position.x = Math.sin(three.cameraOrbit.theta) * -200;
+            three.camera.position.z = Math.cos(three.cameraOrbit.theta) * 260;
+            three.camera.position.y = 20 + Math.cos(three.cameraOrbit.theta) * 40;
+          },
+        },
+        3.0,
+      );
+      tl.to(".hull-panel", { x: -40, duration: 2.5, ease: "sine.inOut" }, 3.0);
+
+      tl.to(".z-fg-1, .z-fg-2", { scale: 3, opacity: 0, duration: 0.4, ease: "power3.in" }, 5.0);
+      tl.to(".z-bg", { scale: 2.4, opacity: 0.4, duration: 0.4, ease: "power2.in" }, 5.0);
+      tl.to(".z-mg-back", { scale: 1.6, opacity: 0, duration: 0.35, ease: "power3.in" }, 5.05);
+      tl.to(".flash-overlay", { opacity: 0.9, duration: 0.07, ease: "none" }, 5.35);
+      tl.to(".flash-overlay", { opacity: 0, duration: 0.08, ease: "none" }, 5.42);
+      chromFlash(5.0, 0.9);
+
+      tl.fromTo(".z-mg", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 5.5);
+      tl.to(".depth-stage", { perspective: 1600, duration: 1.5, ease: "power2.out" }, 5.5);
+      tl.fromTo(".z-fg-1, .z-fg-2", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.8, ease: "springLight" }, 5.5);
+      tl.to(".bg-inner", { x: -28, y: 16, duration: 9.5, ease: "sine.inOut" }, 5.5);
+      tl.to(".z-mg", { x: 8, y: -6, duration: 9.5, ease: "sine.inOut" }, 5.5);
+      tl.to(".fg-inner", { x: 55, y: -22, duration: 9.5, ease: "sine.inOut" }, 5.5);
+
+      tl.from("#word-signal", { scale: 2.2, y: 100, opacity: 0, duration: 0.22, ease: "springHeavy" }, 7.0);
+      tl.from(".intercept-char", { x: -80, opacity: 0, duration: 0.35, ease: "expo.out", stagger: { each: 0.018, from: "start" } }, 7.55);
+      tl.from("#word-node", { y: 14, opacity: 0, duration: 0.55, ease: "power2.out" }, 8.2);
+      tl.to(counterState, { value: 847293, duration: 1.2, ease: "expo.out", onUpdate: updateCounter }, 8.6);
+
+      tl.to("#terminal-panel", { scale: 1.6, z: 400, duration: 0.22, ease: "power4.out" }, 8.0);
+      tl.to(".z-bg, .z-fg-1, .z-fg-2", { opacity: 0.4, duration: 0.18, ease: "power2.out" }, 8.0);
+      tl.to(three.terminalLight, { intensity: 12, duration: 0.3, ease: "power3.out" }, 8.0);
+      tl.to(three.bloomPass, { strength: 3.8, duration: 0.08, ease: "none" }, 8.0);
+      tl.to(three.bloomPass, { strength: 1.4, duration: 0.9, ease: "power2.out" }, 8.08);
+      tl.to("#root", { x: 9, duration: 0.03, overwrite: "auto" }, 8.0);
+      tl.to("#root", { x: -7.2, duration: 0.03, overwrite: "auto" }, 8.03);
+      tl.to("#root", { x: 3.6, duration: 0.025, overwrite: "auto" }, 8.06);
+      tl.to("#root", { x: -1.8, duration: 0.025, overwrite: "auto" }, 8.085);
+      tl.to("#root", { x: 0, duration: 0.06, ease: "power2.out", overwrite: "auto" }, 8.11);
+      burst(burstA, 8.0);
+      impactResponse(8.0);
+      chromFlash(8.0, 1.4);
+      tl.to("#terminal-panel", { scale: 1, z: 0, duration: 0.55, ease: "elastic.out(1, 0.4)" }, 8.22);
+      tl.to(".z-bg, .z-fg-1, .z-fg-2", { opacity: 1, duration: 0.45, ease: "power2.out" }, 8.27);
+      tl.to(three.terminalLight, { intensity: 0, duration: 1.2, ease: "power2.out" }, 8.35);
+
+      tl.to("#terminal-panel", { clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)", duration: 0.35, ease: "power3.inOut" }, 9.2);
+      tl.to("#terminal-panel", { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)", duration: 0.25, ease: "expo.out" }, 9.55);
+      tl.to("#terminal-panel", { boxShadow: "0 0 80px rgba(0,180,255,0.45), 0 0 180px rgba(0,100,255,0.16), inset 0 0 45px rgba(0,150,255,0.2)", duration: 0.16, ease: "power2.out" }, 9.2);
+      tl.to("#terminal-panel", { boxShadow: "0 0 40px rgba(0,180,255,0.12), 0 0 120px rgba(0,100,255,0.06), inset 0 0 20px rgba(0,150,255,0.04)", duration: 0.55, ease: "power2.out" }, 9.36);
+      burst(burstB, 9.2);
+
+      tl.to(".depth-stage", { perspective: 800, duration: 0.6, ease: "power2.in" }, 10.0);
+      tl.to(".depth-stage", { perspective: 1800, duration: 0.2, ease: "power4.out" }, 10.6);
+      tl.to(".z-fg-2", { scale: 1.3, opacity: 0.5, duration: 0.15, ease: "power3.out" }, 10.6);
+      tl.to(".z-fg-2", { scale: 1, opacity: 1, duration: 0.6, ease: "springLight" }, 10.75);
+
+      tl.to(".depth-stage", { perspective: 2200, duration: 4, ease: "sine.inOut" }, 11.0);
+      tl.to(".z-mg", { opacity: 0.7, duration: 3.5, ease: "power1.inOut" }, 11.5);
+      tl.to(three.camera.position, { z: 550, duration: 4, ease: "sine.inOut" }, 11.0);
+      tl.to(three.engineGlow, { intensity: 2, duration: 4, ease: "sine.inOut" }, 11.0);
+
+      tl.to(".nebula", { rotation: 8, duration: 15, ease: "sine.inOut" }, 0);
+      tl.to(".data-stream", { y: -400, duration: 4, repeat: finiteRepeat(4), ease: "none" }, 0);
+      tl.to(".radar", { rotation: 360, duration: 2.5, repeat: finiteRepeat(2.5), ease: "none" }, 0);
+      tl.to(".hud-ring-a", { rotation: 360, duration: 7.5, repeat: finiteRepeat(7.5), ease: "none" }, 0);
+      tl.to(".hud-ring-b", { rotation: -216, duration: 7.5, repeat: finiteRepeat(7.5), ease: "none" }, 0);
+      tl.to(".scan-cyan", { y: 1960, duration: 2.8, repeat: finiteRepeat(2.8), ease: "none" }, 0);
+      tl.to(".scan-amber", { y: 1960, duration: 5, repeat: finiteRepeat(5), ease: "none" }, 0);
+      tl.to(".light-ray", { x: -900, duration: 4, ease: "sine.inOut" }, 2.0);
+      tl.to(".status-dot", { opacity: 0.35, duration: 1.2, repeat: finiteRepeat(1.2), yoyo: true, stagger: 0.2, ease: "sine.inOut" }, 0);
+      tl.to(three.engineGlow, { intensity: 10, duration: 1.6, repeat: finiteRepeat(1.6), yoyo: true, ease: "sine.inOut" }, 0);
+
+      lifePulse(".nebula", { scaleAmp: 0.04, scalePeriod: 6.5, yAmp: 14, rotAmp: 0 }, 0);
+      lifePulse("#terminal-panel", { scaleAmp: 0.012, scalePeriod: 3.1, yAmp: 4, rotAmp: 0.2 }, 0);
+      lifePulse(".frame-bracket", { scaleAmp: 0.018, scalePeriod: 3.8, yAmp: 0, rotAmp: 0 }, 0);
+      lifePulse(".hud-ring", { scaleAmp: 0.022, scalePeriod: 2.8, yAmp: 6, rotAmp: 0.4 }, 0);
+      lifePulse(".hull-panel", { scaleAmp: 0.008, scalePeriod: 4.2, yAmp: 3, rotAmp: 0.15 }, 0);
+      lifePulse(".fg-particle", { scaleAmp: 0.06, scalePeriod: 1.6, yAmp: 10, rotAmp: 2 }, 0);
+
+      tl.eventCallback("onUpdate", () => three.renderAt(tl.time()));
+      window.__timelines.epoch = tl;
+      updateBG();
+      updateCounter();
+    </script>
+  </body>
+</html>
