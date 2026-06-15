@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ace Magnates Dynamic Promo - Desktop</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Playfair+Display:wght@800;900&display=swap");
+      * { box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #0A0A0A; }
+      #ace-dynamic-desktop {
+        position: relative; width: 1920px; height: 1080px; overflow: hidden;
+        background: #0A0A0A; color: #FFFFFF; font-family: Inter, Arial, sans-serif;
+      }
+      .scene { position: absolute; inset: 0; overflow: hidden; background: #0A0A0A; }
+      .bg-noise { position: absolute; inset: 0; opacity: .08; background-image: radial-gradient(circle, rgba(255,255,255,.2) 0 1px, transparent 1px); background-size: 19px 23px; }
+      .vignette { position: absolute; inset: -1px; background: radial-gradient(circle at 50% 45%, transparent 0 38%, rgba(0,0,0,.72) 78%), radial-gradient(circle at 50% 55%, rgba(196,30,46,.18), transparent 48%); }
+      .neon-line { position: absolute; height: 4px; border-radius: 99px; background: linear-gradient(90deg, #E0333F, #D4A853, #E0333F); box-shadow: 0 0 18px #E0333F, 0 0 42px rgba(212,168,83,.32); }
+      .spark { position: absolute; z-index: 2; width: 9px; height: 9px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 0 16px #FFFFFF, 0 0 34px #E0333F; pointer-events: none; }
+      .halo { position: absolute; z-index: 1; width: 260px; height: 260px; border-radius: 50%; border: 2px solid rgba(224,51,63,.2); box-shadow: inset 0 0 34px rgba(224,51,63,.12), 0 0 45px rgba(212,168,83,.12); pointer-events: none; }
+      .sweep { position: absolute; inset: -20%; z-index: 1; opacity: .18; background: radial-gradient(ellipse 18% 55% at 50% 50%, rgba(224,51,63,.9), transparent 70%); pointer-events: none; }
+      .cursor { position: absolute; z-index: 20; width: 0; height: 0; border-left: 28px solid #3B82F6; border-top: 17px solid transparent; border-bottom: 17px solid transparent; filter: drop-shadow(0 0 8px #3B82F6); transform: rotate(-18deg); }
+      .select { position: absolute; border: 2px dashed rgba(255,255,255,.85); box-shadow: 0 0 0 1px rgba(59,130,246,.25), 0 0 28px rgba(224,51,63,.3); }
+      .handle { position: absolute; width: 9px; height: 9px; background: #FFFFFF; }
+      .h1 { left: -5px; top: -5px; } .h2 { right: -5px; top: -5px; } .h3 { left: -5px; bottom: -5px; } .h4 { right: -5px; bottom: -5px; }
+      .logo { display: flex; align-items: center; gap: 16px; }
+      .spade { width: 54px; height: 54px; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: #FFFFFF; color: #0A0A0A; font-size: 34px; box-shadow: 0 0 28px rgba(224,51,63,.3); }
+      .brand { font-family: "Playfair Display", serif; font-size: 32px; line-height: .9; font-weight: 900; text-transform: uppercase; }
+      .sub { margin-top: 7px; color: #E0333F; font-size: 13px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; }
+      .title { margin: 0; font-family: "Playfair Display", serif; font-size: 96px; line-height: .94; font-weight: 900; }
+      .red { color: #C41E2E; text-shadow: 0 0 22px rgba(224,51,63,.28); }
+      .label { color: #E0333F; font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.2px; }
+      .copy { color: #B0B0B0; font-size: 25px; line-height: 1.35; }
+      .shot { position: absolute; width: 820px; height: 462px; border-radius: 28px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 0 70px rgba(224,51,63,.18); opacity: .34; }
+      .shot img { width: 100%; height: 100%; object-fit: cover; }
+      .panel { background: rgba(17,17,17,.94); border: 1px solid rgba(255,255,255,.1); border-radius: 22px; box-shadow: 0 24px 100px rgba(0,0,0,.52), 0 0 44px rgba(196,30,46,.14); }
+      .dash { width: 560px; padding: 34px; }
+      .dash-title { color: #B0B0B0; font-weight: 800; font-size: 20px; }
+      .amount { margin-top: 14px; font-family: "Playfair Display", serif; font-size: 54px; font-weight: 900; }
+      .gain { display: inline-flex; margin-left: 16px; padding: 7px 14px; border-radius: 999px; background: rgba(34,197,94,.14); color: #22C55E; font-family: Inter; font-size: 17px; font-weight: 900; vertical-align: middle; }
+      .bars { height: 150px; margin: 40px 0 24px; display: flex; align-items: flex-end; gap: 14px; }
+      .bar { width: 34px; height: calc(var(--h) * 1px); transform-origin: bottom; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #E0333F, #8B0000); }
+      .mini { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+      .chip { padding: 18px 12px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); text-align: center; }
+      .chip strong { display: block; font-size: 24px; font-weight: 900; } .chip span { display: block; color: #B0B0B0; font-size: 14px; margin-top: 7px; }
+      .feature-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 22px; }
+      .feature { min-height: 250px; padding: 30px; }
+      .icon { width: 58px; height: 58px; margin-bottom: 22px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; background: rgba(196,30,46,.16); border: 1px solid rgba(224,51,63,.3); font-size: 29px; box-shadow: 0 0 28px rgba(224,51,63,.16); }
+      .feature h3 { margin: 0 0 12px; font-size: 25px; } .feature p { margin: 0; color: #B0B0B0; font-size: 19px; line-height: 1.34; }
+      .stars { display: flex; gap: 18px; font-size: 74px; color: #D4A853; text-shadow: 0 0 25px rgba(212,168,83,.45); }
+      .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 22px; }
+      .stat { padding: 34px 28px; min-height: 214px; }
+      .num { font-family: "Playfair Display", serif; font-size: 68px; color: #C41E2E; font-weight: 900; }
+      .stat span { display: block; color: #B0B0B0; font-size: 20px; line-height: 1.25; margin-top: 14px; }
+      .cta { display: inline-flex; height: 68px; min-width: 210px; align-items: center; justify-content: center; border-radius: 10px; background: linear-gradient(90deg,#E0333F,#8B0000); color: #FFFFFF; font-size: 22px; font-weight: 900; box-shadow: 0 0 30px rgba(224,51,63,.34); }
+      #s1 .logo { position: absolute; left: 170px; top: 110px; }
+      #s1 .title { position: absolute; left: 170px; top: 355px; width: 735px; }
+      #s1 .copy { position: absolute; left: 174px; top: 610px; width: 670px; }
+      #s1 .dash { position: absolute; right: 190px; top: 326px; }
+      #s1 .shot { right: 80px; top: 90px; }
+      #s1 .select { left: 150px; top: 334px; width: 780px; height: 234px; }
+      #s1 .cursor { left: 860px; top: 530px; }
+      #s1 .neon-line { left: 150px; top: 310px; width: 730px; }
+      #s2 .label { position: absolute; left: 190px; top: 152px; }
+      #s2 .title { position: absolute; left: 190px; top: 200px; width: 980px; font-size: 78px; }
+      #s2 .feature-row { position: absolute; left: 190px; right: 190px; top: 454px; }
+      #s2 .select { right: 165px; top: 430px; width: 390px; height: 300px; }
+      #s2 .cursor { right: 205px; top: 760px; }
+      #s2 .neon-line { left: 190px; top: 384px; width: 1320px; }
+      #s3 .stars { position: absolute; left: 186px; top: 150px; }
+      #s3 .title { position: absolute; left: 186px; top: 282px; width: 840px; font-size: 78px; }
+      #s3 .stat-grid { position: absolute; left: 186px; right: 186px; bottom: 135px; }
+      #s3 .dash { position: absolute; right: 186px; top: 150px; transform: scale(.9); transform-origin: top right; }
+      #s3 .cursor { left: 1110px; top: 520px; }
+      #s4 .shot { left: 150px; top: 120px; width: 780px; height: 438px; opacity: .2; }
+      #s4 .final { position: absolute; left: 50%; top: 50%; width: 930px; padding: 56px 64px; text-align: center; }
+      #s4 .final .logo { justify-content: center; }
+      #s4 .final h2 { margin: 42px 0 0; font-family: "Playfair Display", serif; font-size: 70px; }
+      #s4 .cta { margin-top: 34px; }
+      #s4 .neon-line { left: 600px; top: 690px; width: 720px; }
+    </style>
+  </head>
+  <body>
+    <div id="ace-dynamic-desktop" data-composition-id="ace-dynamic-desktop" data-start="0" data-duration="20" data-width="1920" data-height="1080">
+      <audio id="vo" src="narration.wav" data-start="0" data-duration="20" data-track-index="0" data-volume=".8"></audio>
+      <audio id="bed" src="sfx/bed.wav" data-start="0" data-duration="20" data-track-index="2" data-volume=".32"></audio>
+      <audio id="hit1" src="sfx/bass-hit.wav" data-start=".45" data-duration=".28" data-track-index="3" data-volume=".9"></audio>
+      <audio id="whoosh1" src="sfx/whoosh.wav" data-start="4.45" data-duration=".42" data-track-index="4" data-volume=".8"></audio>
+      <audio id="click1" src="sfx/click.wav" data-start="5.35" data-duration=".08" data-track-index="5" data-volume=".8"></audio>
+      <audio id="riser1" src="sfx/riser.wav" data-start="9.1" data-duration=".65" data-track-index="6" data-volume=".8"></audio>
+      <audio id="hit2" src="sfx/bass-hit.wav" data-start="9.85" data-duration=".28" data-track-index="7" data-volume=".9"></audio>
+      <audio id="spark1" src="sfx/sparkle.wav" data-start="13.2" data-duration=".24" data-track-index="8" data-volume=".85"></audio>
+      <audio id="whoosh2" src="sfx/whoosh.wav" data-start="15.25" data-duration=".42" data-track-index="9" data-volume=".85"></audio>
+      <audio id="hit3" src="sfx/bass-hit.wav" data-start="16.05" data-duration=".28" data-track-index="10" data-volume=".85"></audio>
+      <audio id="ui1" src="sfx/click.wav" data-start="1.05" data-duration=".08" data-track-index="11" data-volume=".8"></audio>
+      <audio id="ui2" src="sfx/click.wav" data-start="1.34" data-duration=".08" data-track-index="12" data-volume=".65"></audio>
+      <audio id="gl1" src="sfx/glitch.wav" data-start="4.62" data-duration=".16" data-track-index="13" data-volume=".55"></audio>
+      <audio id="ui3" src="sfx/click.wav" data-start="5.72" data-duration=".08" data-track-index="14" data-volume=".7"></audio>
+      <audio id="ui4" src="sfx/click.wav" data-start="6.15" data-duration=".08" data-track-index="15" data-volume=".62"></audio>
+      <audio id="sp2" src="sfx/sparkle.wav" data-start="9.9" data-duration=".16" data-track-index="16" data-volume=".75"></audio>
+      <audio id="ui5" src="sfx/click.wav" data-start="10.95" data-duration=".08" data-track-index="17" data-volume=".66"></audio>
+      <audio id="gl2" src="sfx/glitch.wav" data-start="15.5" data-duration=".16" data-track-index="18" data-volume=".55"></audio>
+      <audio id="ui6" src="sfx/click.wav" data-start="16.72" data-duration=".08" data-track-index="19" data-volume=".72"></audio>
+
+      <section id="s1" class="scene">
+        <div class="vignette"></div><div class="bg-noise"></div><div class="sweep"></div>
+        <div class="shot"><img src="capture/screenshots/scroll-000.png" alt="Ace Magnates website" /></div>
+        <div class="neon-line"></div>
+        <div class="select"><i class="handle h1"></i><i class="handle h2"></i><i class="handle h3"></i><i class="handle h4"></i></div>
+        <div class="logo"><div class="spade">♠</div><div><div class="brand">Ace Magnates</div><div class="sub">Millionaires Hub</div></div></div>
+        <h1 class="title">Ready to build <span class="red">your empire?</span></h1>
+        <p class="copy">A high-status wealth community for entrepreneurs, investors, and operators chasing generational freedom.</p>
+        <div class="dash panel"><div class="dash-title">Member Portfolio Growth</div><div class="amount">$845,290 <span class="gain">↑ 24.5%</span></div><div class="bars"><b class="bar" style="--h:72"></b><b class="bar" style="--h:104"></b><b class="bar" style="--h:64"></b><b class="bar" style="--h:124"></b><b class="bar" style="--h:88"></b><b class="bar" style="--h:138"></b><b class="bar" style="--h:110"></b><b class="bar" style="--h:146"></b><b class="bar" style="--h:96"></b><b class="bar" style="--h:132"></b><b class="bar" style="--h:118"></b><b class="bar" style="--h:152"></b></div><div class="mini"><div class="chip"><strong>12.4K</strong><span>Members</span></div><div class="chip"><strong>$2.1M</strong><span>Avg. Net Worth</span></div><div class="chip"><strong>98.7%</strong><span>Satisfaction</span></div></div></div>
+        <div class="cursor"></div>
+      </section>
+
+      <section id="s2" class="scene">
+        <div class="vignette"></div><div class="bg-noise"></div><div class="sweep"></div><div class="neon-line"></div>
+        <div class="label">Everything you need</div><h2 class="title">Mentorship, signals, academy, network.</h2>
+        <div class="feature-row">
+          <article class="feature panel"><div class="icon">♛</div><h3>Elite Mentorship</h3><p>Access proven operators and strategic wealth guidance.</p></article>
+          <article class="feature panel"><div class="icon">↗</div><h3>Investment Signals</h3><p>Real-time market ideas and analyst insights.</p></article>
+          <article class="feature panel"><div class="icon">▣</div><h3>Business Academy</h3><p>Launch, scale, and automate profitable businesses.</p></article>
+          <article class="feature panel"><div class="icon">◆</div><h3>Network</h3><p>Peers, partners, investors, and accountability.</p></article>
+        </div>
+        <div class="select"><i class="handle h1"></i><i class="handle h2"></i><i class="handle h3"></i><i class="handle h4"></i></div><div class="cursor"></div>
+      </section>
+
+      <section id="s3" class="scene">
+        <div class="vignette"></div><div class="bg-noise"></div><div class="sweep"></div>
+        <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <h2 class="title">Proof that moves like momentum.</h2>
+        <div class="dash panel"><div class="dash-title">Portfolio Signal</div><div class="amount">$845,290 <span class="gain">↑ 24.5%</span></div><div class="bars"><b class="bar" style="--h:72"></b><b class="bar" style="--h:104"></b><b class="bar" style="--h:64"></b><b class="bar" style="--h:124"></b><b class="bar" style="--h:88"></b><b class="bar" style="--h:138"></b><b class="bar" style="--h:110"></b><b class="bar" style="--h:146"></b><b class="bar" style="--h:96"></b><b class="bar" style="--h:132"></b><b class="bar" style="--h:118"></b><b class="bar" style="--h:152"></b></div><div class="mini"><div class="chip"><strong>12.4K</strong><span>Members</span></div><div class="chip"><strong>$2.1M</strong><span>Avg. Net Worth</span></div><div class="chip"><strong>98.7%</strong><span>Satisfaction</span></div></div></div>
+        <div class="stat-grid"><div class="stat panel"><div class="num">12K+</div><span>Active Members</span></div><div class="stat panel"><div class="num">$50M+</div><span>Member Revenue Generated</span></div><div class="stat panel"><div class="num">500+</div><span>Businesses Launched</span></div><div class="stat panel"><div class="num">47+</div><span>Countries Represented</span></div></div>
+        <div class="cursor"></div>
+      </section>
+
+      <section id="s4" class="scene">
+        <div class="vignette"></div><div class="bg-noise"></div><div class="sweep"></div><div class="shot"><img src="capture/screenshots/scroll-000.png" alt="Ace Magnates website" /></div>
+        <div class="final panel"><div class="logo"><div class="spade">♠</div><div><div class="brand">Ace Magnates</div><div class="sub">Millionaires Hub</div></div></div><h2>Join the Hub.</h2><div class="cta">Join Now →</div></div>
+        <div class="neon-line"></div><div class="cursor" style="left:1210px;top:645px"></div>
+      </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      function seedFX(scene) {
+        const root = document.querySelector(scene);
+        const coords = [
+          ["spark", 0.12, 0.18], ["spark", 0.78, 0.22], ["spark", 0.46, 0.72],
+          ["spark", 0.18, 0.82], ["spark", 0.72, 0.66], ["halo", 0.52, 0.46]
+        ];
+        coords.forEach(([cls, x, y], i) => {
+          const el = document.createElement("i");
+          el.className = cls + " fx fx-" + i;
+          el.style.left = (x * 100) + "%";
+          el.style.top = (y * 100) + "%";
+          root.appendChild(el);
+        });
+      }
+      ["#s1", "#s2", "#s3", "#s4"].forEach(seedFX);
+      gsap.set(["#s2","#s3","#s4"], { opacity: 0 });
+      gsap.set(".bar", { scaleY: 0 });
+      gsap.set(".final", { xPercent: -50, yPercent: -50 });
+      gsap.set(".scene", { transformOrigin: "50% 50%" });
+      gsap.set(".dash,.feature,.stat,.final,.title,.select", { transformOrigin: "50% 50%" });
+      function swap(a,b,t){ tl.to(a,{opacity:.16,scale:1.08,filter:"blur(16px)",duration:.32,ease:"power3.in"},t); tl.fromTo(b,{opacity:0,scale:.82,filter:"blur(20px)"},{opacity:1,scale:1,filter:"blur(0px)",duration:.36,ease:"expo.out"},t+.02); tl.to(a,{opacity:0,duration:.12,ease:"power1.out"},t+.34); }
+      tl.fromTo("#s1",{scale:1.26,x:-130,y:28,rotation:-1.2},{scale:1.0,x:0,y:0,rotation:0,duration:1.12,ease:"expo.out"},0)
+        .to("#s1",{scale:1.13,x:-238,y:-20,rotation:.55,duration:.72,ease:"power3.inOut"},1.2)
+        .to("#s1",{scale:1.0,x:0,y:0,rotation:0,duration:.82,ease:"back.out(1.25)"},2.08)
+        .to("#s1",{scale:1.08,x:60,y:-24,rotation:-.35,duration:1.2,ease:"power2.inOut"},3.0)
+        .fromTo("#s1 .logo",{y:-30,opacity:0},{y:0,opacity:1,duration:.35,ease:"power3.out"},.15)
+        .fromTo("#s1 .title",{scale:.8,opacity:0,x:-80},{scale:1,opacity:1,x:0,duration:.55,ease:"back.out(1.8)"},.42)
+        .fromTo("#s1 .copy",{y:34,opacity:0},{y:0,opacity:1,duration:.38,ease:"power2.out"},.72)
+        .fromTo("#s1 .dash",{x:120,scale:.86,opacity:0},{x:0,scale:1,opacity:1,duration:.52,ease:"expo.out"},.78)
+        .fromTo("#s1 .select",{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.35,ease:"power4.out"},.42)
+        .fromTo("#s1 .neon-line",{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.45,ease:"expo.out"},.5)
+        .to("#s1 .bar",{scaleY:1,stagger:.025,duration:.35,ease:"power3.out"},1.0)
+        .to("#s1 .cursor",{x:45,y:-40,duration:.9,ease:"power1.inOut"},1.0)
+        .to("#s1 .shot",{scale:1.2,x:-80,y:28,duration:4.3,ease:"none"},0)
+        .to("#s1 .fx",{x:90,y:-70,rotation:18,opacity:.35,stagger:.05,duration:1.1,repeat:3,yoyo:true,ease:"sine.inOut"},.35)
+        .to("#s1 .select",{x:16,y:-8,duration:.55,repeat:5,yoyo:true,ease:"sine.inOut"},1.1)
+        .to("#s1 .gain",{scale:1.16,duration:.18,repeat:8,yoyo:true,ease:"sine.inOut"},1.2)
+        .to("#s1 .sweep",{x:780,rotation:18,duration:4.2,ease:"none"},.05);
+      swap("#s1","#s2",4.45);
+      tl.fromTo("#s2",{scale:1.22,x:220,y:30,rotation:1.1},{scale:1,x:0,y:0,rotation:0,duration:.72,ease:"expo.out"},4.45)
+        .to("#s2",{scale:1.18,x:-305,y:-92,rotation:-.75,duration:.7,ease:"power3.inOut"},5.45)
+        .to("#s2",{scale:1.04,x:-30,y:-20,rotation:.2,duration:.78,ease:"back.out(1.1)"},6.25)
+        .to("#s2",{scale:1.16,x:-440,y:-88,rotation:.65,duration:.86,ease:"power3.inOut"},7.25)
+        .to("#s2",{scale:1.02,x:0,y:0,rotation:0,duration:.7,ease:"power2.out"},8.15)
+        .fromTo("#s2 .label",{x:-40,opacity:0},{x:0,opacity:1,duration:.24,ease:"power2.out"},4.54)
+        .fromTo("#s2 .title",{y:54,opacity:0},{y:0,opacity:1,duration:.36,ease:"expo.out"},4.58)
+        .fromTo("#s2 .neon-line",{scaleX:0},{scaleX:1,duration:.36,ease:"power3.out"},4.64)
+        .fromTo("#s2 .feature",{y:90,opacity:0,rotation:-2},{y:0,opacity:1,rotation:0,stagger:.06,duration:.36,ease:"back.out(1.7)"},4.78)
+        .fromTo("#s2 .select",{scale:.75,opacity:0},{scale:1,opacity:1,duration:.28,ease:"expo.out"},5.05)
+        .to("#s2 .cursor",{x:-92,y:-95,duration:1.2,ease:"power1.inOut"},5.1)
+        .to("#s2 .icon",{scale:1.14,repeat:8,yoyo:true,stagger:.06,duration:.22,ease:"sine.inOut"},6.0)
+        .to("#s2 .fx",{x:-120,y:65,rotation:-28,opacity:.45,stagger:.04,duration:.92,repeat:5,yoyo:true,ease:"sine.inOut"},4.75)
+        .to("#s2 .feature",{y:-10,rotation:.6,duration:.42,repeat:7,yoyo:true,stagger:.05,ease:"sine.inOut"},6.15)
+        .to("#s2 .neon-line",{x:120,duration:.9,repeat:4,yoyo:true,ease:"sine.inOut"},5.7)
+        .to("#s2 .sweep",{x:-650,rotation:-14,duration:4.8,ease:"none"},4.55);
+      swap("#s2","#s3",9.55);
+      tl.fromTo("#s3",{scale:1.28,x:-220,y:80,rotation:-1.1},{scale:1.02,x:0,y:0,rotation:0,duration:.72,ease:"expo.out"},9.55)
+        .to("#s3",{scale:1.2,x:265,y:-110,rotation:.7,duration:.78,ease:"power3.inOut"},10.55)
+        .to("#s3",{scale:1.08,x:-130,y:-16,rotation:-.4,duration:.72,ease:"back.out(1.1)"},11.35)
+        .to("#s3",{scale:1.18,x:-330,y:-68,rotation:.55,duration:.9,ease:"power3.inOut"},12.45)
+        .to("#s3",{scale:1.0,x:0,y:0,rotation:0,duration:.92,ease:"power2.out"},13.55)
+        .fromTo("#s3 .stars span",{y:80,opacity:0,scale:.3},{y:0,opacity:1,scale:1,stagger:.05,duration:.26,ease:"back.out(2.2)"},9.6)
+        .fromTo("#s3 .title",{x:-70,opacity:0},{x:0,opacity:1,duration:.34,ease:"power3.out"},9.72)
+        .fromTo("#s3 .dash",{x:80,opacity:0,scale:.82},{x:0,opacity:1,scale:.9,duration:.36,ease:"expo.out"},9.82)
+        .fromTo("#s3 .stat",{y:70,opacity:0,scale:.9},{y:0,opacity:1,scale:1,stagger:.05,duration:.34,ease:"back.out(1.8)"},10.05)
+        .to("#s3 .bar",{scaleY:1,stagger:.025,duration:.35,ease:"power3.out"},10.15)
+        .to("#s3 .cursor",{x:80,y:-60,duration:1.3,ease:"power1.inOut"},11.4)
+        .to("#s3 .stat",{y:-12,scale:1.025,repeat:7,yoyo:true,stagger:.03,duration:.28,ease:"sine.inOut"},11.55)
+        .to("#s3 .fx",{x:130,y:-100,rotation:42,opacity:.5,stagger:.04,duration:.85,repeat:6,yoyo:true,ease:"sine.inOut"},9.85)
+        .to("#s3 .stars span",{scale:1.22,y:-10,repeat:5,yoyo:true,stagger:.04,duration:.18,ease:"sine.inOut"},10.7)
+        .to("#s3 .dash",{x:-24,y:18,duration:.65,repeat:5,yoyo:true,ease:"sine.inOut"},11.0)
+        .to("#s3 .sweep",{x:720,rotation:20,duration:5.6,ease:"none"},9.6);
+      swap("#s3","#s4",15.35);
+      tl.fromTo("#s4",{scale:1.32,x:150,y:60,rotation:1.2},{scale:1.04,x:0,y:0,rotation:0,duration:.64,ease:"expo.out"},15.35)
+        .to("#s4",{scale:1.18,x:-120,y:-22,rotation:-.6,duration:.7,ease:"power3.inOut"},16.18)
+        .to("#s4",{scale:1.0,x:0,y:0,rotation:0,duration:.8,ease:"back.out(1.2)"},17.0)
+        .fromTo("#s4 .shot",{scale:1,opacity:0},{scale:1.08,opacity:.2,duration:4.2,ease:"none"},15.38)
+        .fromTo("#s4 .final",{xPercent:-50,yPercent:-50,scale:.78,opacity:0},{xPercent:-50,yPercent:-50,scale:1,opacity:1,duration:.44,ease:"back.out(1.8)"},15.52)
+        .fromTo("#s4 .neon-line",{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.36,ease:"expo.out"},15.84)
+        .fromTo("#s4 .cta",{scale:.75,opacity:0},{scale:1,opacity:1,duration:.3,ease:"back.out(2)"},16.02)
+        .to("#s4 .cursor",{x:-50,y:-40,duration:.75,ease:"power1.inOut"},16.6)
+        .to("#s4 .cta",{scale:1.06,repeat:3,yoyo:true,duration:.32,ease:"sine.inOut"},17.0)
+        .to("#s4 .fx",{x:-80,y:60,rotation:-30,opacity:.45,stagger:.05,duration:.75,repeat:5,yoyo:true,ease:"sine.inOut"},15.7)
+        .to("#s4 .final",{xPercent:-50,yPercent:-50,y:-10,duration:.45,repeat:6,yoyo:true,ease:"sine.inOut"},16.7)
+        .to("#s4 .sweep",{x:-680,rotation:-20,duration:4.0,ease:"none"},15.45)
+        .to("#s4",{opacity:0,duration:.5,ease:"power2.in"},19.5);
+      window.__timelines["ace-dynamic-desktop"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,207 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "Playfair Display",
+      "fontSize": "80px",
+      "fontWeight": "900",
+      "lineHeight": "86.4px",
+      "letterSpacing": "-1.6px",
+      "color": "#FFFFFF",
+      "sampleText": "Build Your Empire with Ace Magnates"
+    },
+    {
+      "role": "heading",
+      "fontFamily": "Playfair Display",
+      "fontSize": "51.2px",
+      "fontWeight": "800",
+      "lineHeight": "58.88px",
+      "letterSpacing": "-1.024px",
+      "color": "#FFFFFF",
+      "sampleText": "Everything you need to build wealth"
+    },
+    {
+      "role": "heading-2",
+      "fontFamily": "Playfair Display",
+      "fontSize": "38.4px",
+      "fontWeight": "800",
+      "lineHeight": "65.28px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "Ready to join the elite?"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Inter",
+      "fontSize": "24px",
+      "fontWeight": "700",
+      "lineHeight": "40.8px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "Elite Mentorship"
+    },
+    {
+      "role": "body",
+      "fontFamily": "Inter",
+      "fontSize": "19.2px",
+      "fontWeight": "400",
+      "lineHeight": "32.64px",
+      "letterSpacing": "normal",
+      "color": "#B0B0B0",
+      "sampleText": "Join the Millionaires Hub — an exclusive community for ambit"
+    },
+    {
+      "role": "link",
+      "fontFamily": "Inter",
+      "fontSize": "19.2px",
+      "fontWeight": "800",
+      "lineHeight": "32.64px",
+      "letterSpacing": "0.768px",
+      "color": "#FFFFFF",
+      "sampleText": "Ace Magnates Millionaires Hub"
+    },
+    {
+      "role": "heading-4",
+      "fontFamily": "Inter",
+      "fontSize": "14.4px",
+      "fontWeight": "600",
+      "lineHeight": "24.48px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "David Khumalo"
+    },
+    {
+      "role": "label",
+      "fontFamily": "Inter",
+      "fontSize": "12.8px",
+      "fontWeight": "600",
+      "lineHeight": "21.76px",
+      "letterSpacing": "normal",
+      "color": "#E0333F",
+      "sampleText": "Now Open for New Members"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      3,
+      5,
+      6,
+      8,
+      10,
+      11,
+      13,
+      14,
+      16,
+      19,
+      24,
+      29,
+      32,
+      48,
+      64
+    ],
+    "baseUnit": 8
+  },
+  "radius": [
+    "8px",
+    "20px",
+    "50%"
+  ],
+  "shadows": [
+    {
+      "value": "rgba(196, 30, 46, 0.25) 0px 4px 20px 0px",
+      "count": 2
+    },
+    {
+      "value": "rgba(0, 0, 0, 0.4) 0px 4px 24px 0px",
+      "count": 1
+    }
+  ],
+  "buttons": [
+    {
+      "label": "Join the Hub →",
+      "background": "#000000",
+      "color": "#FFFFFF",
+      "padding": "13.6px 28.8px",
+      "borderRadius": "8px",
+      "border": "0px none rgb(255, 255, 255)",
+      "boxShadow": "rgba(196, 30, 46, 0.25) 0px 4px 20px 0px",
+      "fontSize": "16.8px",
+      "fontWeight": "600",
+      "height": "57.7344px"
+    },
+    {
+      "label": "Learn More",
+      "background": "#FFFFFF",
+      "color": "#FFFFFF",
+      "padding": "13.6px 28.8px",
+      "borderRadius": "8px",
+      "border": "1px solid rgba(255, 255, 255, 0.12)",
+      "boxShadow": "none",
+      "fontSize": "16.8px",
+      "fontWeight": "600",
+      "height": "57.7344px"
+    },
+    {
+      "label": "Ready to join the elite?\n        Your fu",
+      "background": "#000000",
+      "color": "#FFFFFF",
+      "padding": "128px 64px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "644.656px"
+    },
+    {
+      "label": "Ready to join the elite?\n        Your fu",
+      "background": "#111111",
+      "color": "#FFFFFF",
+      "padding": "64px 48px",
+      "borderRadius": "28px",
+      "border": "1px solid rgba(255, 255, 255, 0.08)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "388.656px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "#111111",
+      "color": "#FFFFFF",
+      "padding": "32px",
+      "borderRadius": "20px",
+      "border": "1px solid rgba(255, 255, 255, 0.08)",
+      "boxShadow": "rgba(0, 0, 0, 0.4) 0px 4px 24px 0px",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "401.391px"
+    },
+    {
+      "label": "card",
+      "background": "#000000",
+      "color": "#FFFFFF",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "595.031px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "#0A0A0A",
+    "color": "#FFFFFF",
+    "padding": "14.0351px 0px",
+    "borderRadius": "0px",
+    "border": "",
+    "boxShadow": "none",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "height": "70.1406px"
+  }
+}
